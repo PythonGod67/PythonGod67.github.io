@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Listings
+    match /listings/{listingId} {
+      allow read: if true; // Anyone can read listings
+      allow create: if isAuthenticated() && request.resource.data.vendorId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.vendorId);
+    }
+
+    // Categories
+    match /categories/{categoryId} {
+      allow read: if true; // Anyone can read categories
+      allow write: if false; // No one can write to categories (admin-only operation)
+    }
+
+    // Bookings
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated() && 
+                  (resource.data.userId == request.auth.uid || 
+                   resource.data.vendorId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || 
+                     resource.data.vendorId == request.auth.uid);
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    // Reviews
+    match /reviews/{reviewId} {
+      allow read: if true; // Anyone can read reviews
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+
+    // Cart items
+    match /cart/{cartItemId} {
+      allow read, write: if isOwner(resource.data.userId);
+    }
+
+    // Chat rooms
+    match /chatRooms/{chatRoomId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated() && request.auth.uid in request.resource.data.participants;
+      allow update: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow delete: if false; // Chat rooms cannot be deleted
+    }
+
+    // Chat messages
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() && exists(/databases/$(database)/documents/chatRooms/$(resource.data.chatRoomId)) && 
+                  request.auth.uid in get(/databases/$(database)/documents/chatRooms/$(resource.data.chatRoomId)).data.participants;
+      allow create: if isAuthenticated() && exists(/databases/$(database)/documents/chatRooms/$(request.resource.data.chatRoomId)) && 
+                    request.auth.uid in get(/databases/$(database)/documents/chatRooms/$(request.resource.data.chatRoomId)).data.participants && 
+                    request.resource.data.senderId == request.auth.uid;
+      allow update, delete: if false; // Messages cannot be updated or deleted
+    }
+  }
+}
