@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button as MovingBorderButton } from "@/components/ui/moving-border";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -15,6 +16,7 @@ import {
 import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 import { FlipWords } from "@/components/ui/flip-words";
 import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
+import { Instagram, Youtube } from 'lucide-react';
 
 const AnimatedCard = ({ children }) => (
   <motion.div
@@ -388,6 +390,66 @@ const Testimonials = () => {
   );
 };
 
+const Footer = () => (
+  <motion.footer
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="bg-gray-800 text-white py-8"
+  >
+    <div className="container mx-auto px-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <h3 className="text-xl font-bold mb-4">About Medelen</h3>
+          <p>Connecting you with the physical therapy equipment you need!</p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+          <ul className="space-y-2">
+            <li><Link href="/about" className="hover:text-sky-400 transition-colors">About Us</Link></li>
+            <li><Link href="/contact" className="hover:text-sky-400 transition-colors">Contact</Link></li>
+            <li><Link href="/terms" className="hover:text-sky-400 transition-colors">Terms of Service</Link></li>
+            <li><Link href="/privacy" className="hover:text-sky-400 transition-colors">Privacy Policy</Link></li>
+          </ul>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <h3 className="text-xl font-bold mb-4">Contact Us</h3>
+          <p>Email: support@medelen.com</p>
+          <p>Phone: (123) 456-7890</p>
+          <div className="flex space-x-4 mt-4">
+            <a href="https://www.instagram.com/medelen" target="_blank" rel="noopener noreferrer" className="hover:text-sky-400 transition-colors">
+              <Instagram size={24} />
+            </a>
+            <a href="https://www.youtube.com/medelen" target="_blank" rel="noopener noreferrer" className="hover:text-sky-400 transition-colors">
+              <Youtube size={24} />
+            </a>
+          </div>
+        </motion.div>
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="mt-8 text-center"
+      >
+        <p>&copy; 2024 Medelen. All rights reserved.</p>
+      </motion.div>
+    </div>
+  </motion.footer>
+);
+
 const LandingPage = () => {
   const { scrollYProgress } = useScroll();
   const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0]);
@@ -435,6 +497,7 @@ const LandingPage = () => {
         <MeetTheFounders />
         <FAQ />
       </div>
+      <Footer />
     </div>
   );
 };

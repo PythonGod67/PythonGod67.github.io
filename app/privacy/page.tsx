@@ -1,15 +1,29 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ChevronRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { ChevronRight, ArrowLeft } from 'lucide-react';
 import { BackgroundGradientAnimation } from "@/components/ui/background-gradient";
 
 const PrivacyPolicyPage: React.FC = () => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [backLink, setBackLink] = useState('/');
+  const router = useRouter();
+
+  useEffect(() => {
+    const referrer = document.referrer;
+    if (referrer.includes('/home')) {
+      setBackLink('/home');
+    } else {
+      setBackLink('/');
+    }
+  }, []);
 
   const sections = [
     {
@@ -124,7 +138,25 @@ const PrivacyPolicyPage: React.FC = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
+            className="relative"
           >
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="absolute top-4 left-4 z-20"
+            >
+              <Link href={backLink}>
+                <Button
+                  variant="ghost"
+                  className="bg-white/20 backdrop-filter backdrop-blur-lg border border-white/30 rounded-full px-4 py-2 text-white hover:bg-white/30 transition-all duration-300"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back
+                </Button>
+              </Link>
+            </motion.div>
+
             <Card className="max-w-4xl mx-auto shadow-lg backdrop-filter backdrop-blur-lg bg-white/20 border border-white/30 rounded-3xl overflow-hidden">
               <CardHeader className="bg-gradient-to-r from-blue-600/80 to-blue-400/80 text-white p-8">
                 <motion.div

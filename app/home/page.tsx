@@ -19,6 +19,7 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import { LampEffect } from "@/components/ui/lamp";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { Input } from "@/components/ui/input";
 import { db, auth, storage } from '@/firebase-config';
 import { getVendorListings } from '@/utils/vendorUtils';
 import { useChat } from '@/hooks/useChat';
@@ -344,12 +345,30 @@ const HomePage: React.FC = () => {
           <BackgroundBeams />
         </div>
         <div className="relative z-10">
-          <header className="bg-white shadow-md sticky top-0">
+          <motion.header
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white shadow-md sticky top-0"
+          >
             <div className="container mx-auto px-4 py-4">
               <div className="flex items-center justify-between">
                 <Link href="/" className="flex items-center">
-                  <Image src="/transparentbg-medelen-logo.png" alt="Medelen Logo" width={50} height={50} className="mr-4" />
-                  <h1 className="text-3xl font-bold text-sky-600">Medelen</h1>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
+                    <Image src="/transparentbg-medelen-logo.png" alt="Medelen Logo" width={50} height={50} className="mr-4" />
+                  </motion.div>
+                  <motion.h1
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="text-3xl font-bold text-sky-600"
+                  >
+                    Medelen
+                  </motion.h1>
                 </Link>
                 <div className="flex-grow mx-4">
                   <PlaceholdersAndVanishInput
@@ -358,7 +377,12 @@ const HomePage: React.FC = () => {
                     onSubmit={handleSearchSubmit}
                   />
                 </div>
-                <nav className="flex items-center space-x-4">
+                <motion.nav
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  className="flex items-center space-x-4"
+                >
                   <Button variant="ghost" className="text-sky-600" onClick={() => router.push('/chat')}>
                     <MessageCircle size={24} />
                     {chatRooms.length > 0 && <span className="ml-1">({chatRooms.length})</span>}
@@ -382,12 +406,17 @@ const HomePage: React.FC = () => {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </nav>
+                </motion.nav>
               </div>
             </div>
-          </header>
-
-          <div className="container mx-auto px-4 py-8 text-center">
+          </motion.header>
+  
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="container mx-auto px-4 py-8 text-center"
+          >
             <TypewriterEffect
               words={[
                 { text: "Hi" },
@@ -396,26 +425,37 @@ const HomePage: React.FC = () => {
               className="text-4xl font-bold"
               cursorClassName="bg-blue-500"
             />
-          </div>
-
+          </motion.div>
+  
           <main className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-              <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+                className="lg:col-span-1"
+              >
                 <Card className="mb-8 bg-white">
                   <CardHeader>
                     <CardTitle className="text-2xl font-semibold text-sky-600">Categories</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {categories.map((category) => (
-                        <Button
+                      {categories.map((category, index) => (
+                        <motion.div
                           key={category.id}
-                          variant={selectedCategory === category.id ? "default" : "outline"}
-                          onClick={() => handleCategorySelect(category.id)}
-                          className="bg-sky-100 text-sky-600 hover:bg-sky-200 transition-colors duration-200"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.1 * index }}
                         >
-                          {category.name}
-                        </Button>
+                          <Button
+                            variant={selectedCategory === category.id ? "default" : "outline"}
+                            onClick={() => handleCategorySelect(category.id)}
+                            className="bg-sky-100 text-sky-600 hover:bg-sky-200 transition-colors duration-200"
+                          >
+                            {category.name}
+                          </Button>
+                        </motion.div>
                       ))}
                     </div>
                     {categoriesError && (
@@ -423,7 +463,7 @@ const HomePage: React.FC = () => {
                     )}
                   </CardContent>
                 </Card>
-
+  
                 <Card className="bg-white">
                   <CardHeader>
                     <CardTitle className="text-2xl font-semibold text-sky-600">FAQ</CardTitle>
@@ -439,9 +479,14 @@ const HomePage: React.FC = () => {
                     </Accordion>
                   </CardContent>
                 </Card>
-              </div>
-
-              <div className="lg:col-span-3">
+              </motion.div>
+  
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+                className="lg:col-span-3"
+              >
                 {isVendor && (
                   <Card className="mb-8 bg-white">
                     <CardHeader className="flex flex-row items-center justify-between">
@@ -479,7 +524,7 @@ const HomePage: React.FC = () => {
                             categories={categories}
                             onChange={(value) => {
                               setListingCategory(value);
-                              console.log("Category selected:", value); // For debugging
+                              console.log("Category selected:", value);
                             }}
                           />
                           <Input name="image" type="file" accept="image/*" required={!editingListing} />
@@ -530,8 +575,13 @@ const HomePage: React.FC = () => {
                     </CardContent>
                   </Card>
                 )}
-
-              <Card className="mb-8 bg-white">
+  
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                >
+                  <Card className="mb-8 bg-white">
                     <CardHeader>
                       <CardTitle className="text-2xl font-semibold text-sky-600">Available Equipment</CardTitle>
                     </CardHeader>
@@ -544,41 +594,49 @@ const HomePage: React.FC = () => {
                         <p>No equipment found. Try adjusting your search criteria.</p>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {searchResults.map((listing) => (
-                            <Card key={listing.id} className="bg-sky-50">
-                              <CardContent className="p-4">
-                                <h3 className="text-xl font-bold text-sky-600 mb-2">{listing.title}</h3>
-                                <p className="text-sm mb-2">{listing.description}</p>
-                                <Image
-                                  src={listing.imageUrl}
-                                  alt={listing.title}
-                                  width={300}
-                                  height={200}
-                                  className="w-full h-40 object-cover rounded-md mb-2"
-                                />
-                                <p className="text-lg font-bold text-sky-600 mb-2">${listing.price}/day</p>
-                                <div className="flex space-x-2">
-                                  <Button 
-                                    onClick={() => router.push(`/listing/${listing.id}`)} 
-                                    className="flex-1 bg-sky-500 hover:bg-sky-600 text-white transition-colors duration-200"
-                                  >
-                                    View Details
-                                  </Button>
-                                  <Button 
-                                    onClick={() => handleAddToCart(listing)} 
-                                    className="flex-1 bg-green-500 hover:bg-green-600 text-white transition-colors duration-200"
-                                  >
-                                    Add to Cart
-                                  </Button>
-                                </div>
-                              </CardContent>
-                            </Card>
+                          {searchResults.map((listing, index) => (
+                            <motion.div
+                              key={listing.id}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.5, delay: 0.1 * index }}
+                            >
+                              <Card className="bg-sky-50">
+                                <CardContent className="p-4">
+                                  <h3 className="text-xl font-bold text-sky-600 mb-2">{listing.title}</h3>
+                                  <p className="text-sm mb-2">{listing.description}</p>
+                                  <Image
+                                    src={listing.imageUrl}
+                                    alt={listing.title}
+                                    width={300}
+                                    height={200}
+                                    className="w-full h-40 object-cover rounded-md mb-2"
+                                  />
+                                  <p className="text-lg font-bold text-sky-600 mb-2">${listing.price}/day</p>
+                                  <div className="flex space-x-2">
+                                    <Button 
+                                      onClick={() => router.push(`/listing/${listing.id}`)} 
+                                      className="flex-1 bg-sky-500 hover:bg-sky-600 text-white transition-colors duration-200"
+                                    >
+                                      View Details
+                                    </Button>
+                                    <Button 
+                                      onClick={() => handleAddToCart(listing)} 
+                                      className="flex-1 bg-green-500 hover:bg-green-600 text-white transition-colors duration-200"
+                                    >
+                                      Add to Cart
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </motion.div>
                           ))}
                         </div>
                       )}
                     </CardContent>
                   </Card>
-
+                </motion.div>
+  
                 {searchResults.length === 0 && !isSearchLoading && !searchError && (
                   <Card className="mb-8 bg-white">
                     <CardHeader>
@@ -592,6 +650,10 @@ const HomePage: React.FC = () => {
                             <h3 className="text-xl font-bold text-sky-600 mb-2">Adjustable Resistance Bands Set</h3>
                             <p className="text-sm mb-2">Versatile resistance bands for strength training and rehabilitation</p>
                             <Image
+                              src="/resistance-bands.webp"
+                              alt="Resistance Bands"
+                              width={300}
+                              height={200}
                               src="/resistance-bands.webp"
                               alt="Resistance Bands"
                               width={300}
@@ -631,16 +693,21 @@ const HomePage: React.FC = () => {
                     </CardContent>
                   </Card>
                 )}
-              </div>
+              </motion.div>
             </div>
           </main>
-
-          <footer className="bg-gray-800 text-white py-8">
+  
+          <motion.footer
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1 }}
+            className="bg-gray-800 text-white py-8"
+          >
             <div className="container mx-auto px-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                   <h3 className="text-xl font-bold mb-4">About Medelen</h3>
-                  <p>Connecting you with the physical therapy equipment you need</p>
+                  <p>Connecting you with the physical therapy equipment you need!</p>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-4">Quick Links</h3>
@@ -669,7 +736,7 @@ const HomePage: React.FC = () => {
                 <p>&copy; 2024 Medelen. All rights reserved.</p>
               </div>
             </div>
-          </footer>
+          </motion.footer>
         </div>
       </div>
     </div>
