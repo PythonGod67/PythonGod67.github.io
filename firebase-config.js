@@ -5,14 +5,14 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAUU6PIKQ1_fZNk7IG9-8jQHoCCN9sjmiI",
-  authDomain: "medelen-a1ff7.firebaseapp.com",
-  projectId: "medelen-a1ff7",
-  storageBucket: "medelen-a1ff7.appspot.com",
-  messagingSenderId: "50657966995",
-  appId: "1:50657966995:web:64ae1af1d1a6e97b7b8666",
-  measurementId: "G-1BHNW78BV0",
-  databaseURL: "https://medelen-a1ff7-default-rtdb.firebaseio.com/"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL
 };
 
 const app = initializeApp(firebaseConfig);

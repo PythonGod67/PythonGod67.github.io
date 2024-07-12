@@ -6,11 +6,13 @@
 3. [Prerequisites](#prerequisites)
 4. [Installation](#installation)
 5. [Configuration](#configuration)
-6. [Running the Application](#running-the-application)
-7. [Development](#development)
-8. [Deployment](#deployment)
-9. [Contributing](#contributing)
-10. [License](#license)
+6. [Environment Variables](#environment-variables)
+7. [Running the Application](#running-the-application)
+8. [Development](#development)
+9. [Deployment](#deployment)
+10. [Security](#security)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ## About Medelen
 
@@ -35,6 +37,8 @@ medelen-website/
 ├── node_modules/
 ├── public/
 ├── utils/
+├── .env.example
+├── .env.local
 ├── .eslintrc.json
 ├── .gitattributes
 ├── .gitignore
@@ -98,14 +102,44 @@ Before you begin, ensure you have the following installed:
 1. Firebase Setup:
    - Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
    - Enable Authentication, Firestore, and Storage services
-   - Copy your Firebase configuration to `firebase-config.js`
+   - Set up your Firebase configuration (see [Environment Variables](#environment-variables) section)
 
-2. Environment Variables:
-   - Create a `.env.local` file in the root directory
-   - Add necessary environment variables (e.g., Firebase config, API keys)
-
-3. Tailwind CSS:
+2. Tailwind CSS:
    - Ensure `tailwind.config.ts` is properly configured for your project
+
+## Environment Variables
+
+1. Create a `.env.local` file in the root directory of your project.
+
+2. Add the following environment variables to your `.env.local` file:
+
+   ```
+   REACT_APP_FIREBASE_API_KEY=your_api_key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   REACT_APP_FIREBASE_APP_ID=your_app_id
+   REACT_APP_FIREBASE_MEASUREMENT_ID=your_measurement_id
+   REACT_APP_FIREBASE_DATABASE_URL=your_database_url
+   ```
+
+3. Replace `your_*` with your actual Firebase configuration values.
+
+4. Create a `.env.example` file with the same structure but without actual values:
+
+   ```
+   REACT_APP_FIREBASE_API_KEY=
+   REACT_APP_FIREBASE_AUTH_DOMAIN=
+   REACT_APP_FIREBASE_PROJECT_ID=
+   REACT_APP_FIREBASE_STORAGE_BUCKET=
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=
+   REACT_APP_FIREBASE_APP_ID=
+   REACT_APP_FIREBASE_MEASUREMENT_ID=
+   REACT_APP_FIREBASE_DATABASE_URL=
+   ```
+
+5. Add `.env.local` to your `.gitignore` file to prevent committing sensitive information.
 
 ## Running the Application
 
@@ -138,6 +172,17 @@ For Vercel deployment:
 - Connect your GitHub repository to Vercel
 - Configure environment variables in the Vercel dashboard
 - Vercel will automatically deploy on pushes to the main branch
+
+## Security
+
+To maintain the security of your application:
+
+1. Never commit sensitive information like API keys directly in your code.
+2. Use environment variables for all sensitive information.
+3. Keep your `.env.local` file secure and never share it publicly.
+4. Regularly rotate your API keys and update them in your local `.env.local` file and deployment environment.
+5. Use Firebase Security Rules to secure your Firestore and Realtime Database.
+6. Implement proper authentication and authorization in your application.
 
 ## Contributing
 
