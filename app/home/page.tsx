@@ -184,7 +184,9 @@ const HomePage: React.FC = () => {
     e.preventDefault();
     // Implement search functionality
   };
-
+  
+  const [isOpen, setIsOpen] = useState(false);
+  
   const handleSignOut = () => {
     auth.signOut().then(() => {
       router.push('/');
@@ -390,26 +392,50 @@ const HomePage: React.FC = () => {
                   <Button variant="ghost" className="text-sky-600" onClick={() => router.push('/cart')}>
                     <ShoppingCart size={24} />
                   </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <Avatar>
-                        <AvatarImage src={userPhotoURL} alt={userName} />
-                        <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onSelect={() => router.push('/user-settings')}>
-                        User Settings
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={handleSignOut}>
-                        Sign Out
-                      </DropdownMenuItem>
+                  <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+                <DropdownMenuTrigger>
+                  <Avatar>
+                    <AvatarImage src={userPhotoURL} alt={userName} />
+                    <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <AnimatePresence>
+                  {isOpen && (
+                    <DropdownMenuContent
+                      asChild
+                      forceMount
+                      style={{
+                        transformOrigin: 'var(--radix-dropdown-menu-content-transform-origin)'
+                      }}
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="bg-white/70 backdrop-blur-xl border border-gray-200 shadow-lg rounded-lg overflow-hidden"
+                      >
+                        <DropdownMenuItem
+                          onSelect={() => router.push('/user-settings')}
+                          className="px-4 py-2 hover:bg-sky-100 transition-colors duration-200 text-sky-800 font-medium"
+                        >
+                          User Settings
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={handleSignOut}
+                          className="px-4 py-2 hover:bg-sky-100 transition-colors duration-200 text-sky-800 font-medium"
+                        >
+                          Sign Out
+                        </DropdownMenuItem>
+                      </motion.div>
                     </DropdownMenuContent>
-                  </DropdownMenu>
-                </motion.nav>
-              </div>
-            </div>
-          </motion.header>
+                  )}
+                </AnimatePresence>
+              </DropdownMenu>
+            </motion.nav>
+          </div>
+        </div>
+      </motion.header>
   
           <motion.div
             initial={{ opacity: 0, y: 20 }}
