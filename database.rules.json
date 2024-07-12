@@ -3,8 +3,8 @@
     ".read": false,
     ".write": false,
     "users": {
+      ".read": "auth != null",
       "$uid": {
-        ".read": "auth != null",
         ".write": "auth != null && auth.uid == $uid"
       }
     },
@@ -15,7 +15,7 @@
         "$chatRoomId": {
           ".validate": "newData.hasChildren(['participants', 'lastMessage', 'lastMessageTimestamp'])",
           "participants": {
-            ".validate": "newData.isString() && newData.val().contains(auth.uid)"
+            ".validate": "newData.hasChild(auth.uid)"
           },
           "lastMessage": {
             ".validate": "newData.isString()"
@@ -26,10 +26,25 @@
         }
       }
     },
+    "chatRooms": {
+      ".read": "auth != null",
+      "$chatRoomId": {
+        ".write": "auth != null && (!data.exists() || data.child('participants').hasChild(auth.uid))",
+        "participants": {
+          ".validate": "newData.hasChild(auth.uid)"
+        },
+        "lastMessage": {
+          ".validate": "newData.isString()"
+        },
+        "lastMessageTimestamp": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    },
     "messages": {
       "$chatRoomId": {
-        ".read": "auth != null && root.child('userChatRooms').child(auth.uid).child($chatRoomId).exists()",
-        ".write": "auth != null && root.child('userChatRooms').child(auth.uid).child($chatRoomId).exists()",
+        ".read": "auth != null && root.child('chatRooms').child($chatRoomId).child('participants').hasChild(auth.uid)",
+        ".write": "auth != null && root.child('chatRooms').child($chatRoomId).child('participants').hasChild(auth.uid)",
         "$messageId": {
           ".validate": "newData.hasChildren(['senderId', 'text', 'timestamp'])",
           "senderId": {
@@ -39,7 +54,7 @@
             ".validate": "newData.isString()"
           },
           "timestamp": {
-            ".validate": "newData.isNumber()"
+            ".validate": "newData.val() <= now"
           },
           "mediaUrl": {
             ".validate": "!newData.exists() || newData.isString()"
@@ -68,7 +83,7 @@
           ".validate": "newData.isBoolean()"
         },
         "timestamp": {
-          ".validate": "newData.isNumber()"
+          ".validate": "newData.val() <= now"
         }
       }
     }

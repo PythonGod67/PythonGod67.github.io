@@ -151,10 +151,10 @@ const CartPage: React.FC = () => {
             className="flex items-center"
           >
             <Image 
-              src="/rounded-medelen-logo.png" 
+              src="/transparentbg-white-medelen-logo.png" 
               alt="Medelen Logo" 
-              width={50} 
-              height={50} 
+              width={75} 
+              height={75} 
               className="mr-4"
             />
             <h1 className="text-3xl font-bold text-sky-800">Your Cart</h1>

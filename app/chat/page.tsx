@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ref, push, set, onValue, off, serverTimestamp, update, query as fbQuery, orderByKey, limitToLast, endAt } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -12,9 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Send, Paperclip, Image as ImageIcon, X, ThumbsUp, ThumbsDown, Smile } from 'lucide-react';
+import { Loader2, Send, Paperclip, Image as ImageIcon, X, ThumbsUp, ThumbsDown, Smile, ArrowLeft } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient";
 
 interface Message {
   id: string;
@@ -71,7 +73,14 @@ const ChatPage: React.FC = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const currentUser = auth.currentUser;
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const isLoadMoreVisible = useIntersectionObserver(loadMoreRef, { threshold: 1 });
 
@@ -82,7 +91,7 @@ const ChatPage: React.FC = () => {
       return new Promise((resolve, reject) => {
         onValue(usersRef, (snapshot) => {
           const usersData = snapshot.val();
-          const usersArray = Object.keys(usersData).map(key => ({
+          const usersArray = Object.keys(usersData || {}).map(key => ({
             id: key,
             ...usersData[key]
           }));
@@ -91,7 +100,8 @@ const ChatPage: React.FC = () => {
           reject(error);
         });
       });
-    }
+    },
+    enabled: !!currentUser
   });
 
   const { data: chatRooms, isLoading: isLoadingChatRooms, error: chatRoomsError } = useQuery({
@@ -111,7 +121,8 @@ const ChatPage: React.FC = () => {
           reject(error);
         });
       });
-    }
+    },
+    enabled: !!currentUser
   });
 
   const {
@@ -281,174 +292,218 @@ const ChatPage: React.FC = () => {
     });
   }, [currentUser, selectedUser, messages]);
 
+  if (!currentUser) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Please log in to access the chat.</p>
+      </div>
+    );
+  }
+
   if (usersError || chatRoomsError || messagesError) {
-    return <div>Error loading chat data. Please try again later.</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Error loading chat data. Please try again later.</p>
+        <p>{(usersError || chatRoomsError || messagesError)?.toString()}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-4 h-screen flex flex-col">
-      <h1 className="text-3xl font-bold mb-6">Chat</h1>
-      <div className="flex flex-1 gap-4 overflow-hidden">
-        <Card className="w-1/4 overflow-y-auto">
-          <CardContent className="p-4">
-            <Input 
-              type="text" 
-              placeholder="Search users..." 
-              className="mb-4"
-              onChange={(e) => {
-                // Implement user search logic here
-              }}
+    <div className="min-h-screen relative">
+      <div className="absolute inset-0 z-0">
+        <BackgroundGradientAnimation
+          gradientBackgroundStart="rgb(120, 180, 255)"
+          gradientBackgroundEnd="rgb(180, 230, 255)"
+          firstColor="18, 113, 255"
+          secondColor="100, 180, 255"
+          thirdColor="160, 220, 255"
+          fourthColor="200, 240, 255"
+          fifthColor="220, 250, 255"
+          pointerColor="140, 200, 255"
+          size="80%"
+          blendingValue="normal"
+        />
+      </div>
+      <div className="relative z-10 container mx-auto p-4 h-screen flex flex-col">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between mb-6"
+        >
+          <div className="flex items-center">
+            <Image 
+              src="/transparentbg-white-medelen-logo.png" 
+              alt="Medelen Logo" 
+              width={75} 
+              height={75} 
+              className="mr-4"
             />
-            {isLoadingUsers || isLoadingChatRooms ? (
-              <div className="flex justify-center items-center h-full">
-                <Loader2 className="animate-spin" />
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {chatRooms?.map((room) => (
-                  <Button
-                    key={room.id}
-                    variant="ghost"
-                    className="w-full justify-start"
-                    onClick={() => setSelectedUser(room.participants.find(id => id !== currentUser?.uid) || null)}
-                  >
-                    <Avatar className="mr-2">
-                      <AvatarImage src={users?.find(u => u.id === room.participants.find(id => id !== currentUser?.uid))?.photoURL} />
-                      <AvatarFallback>{users?.find(u => u.id === room.participants.find(id => id !== currentUser?.uid))?.displayName?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="text-left">
-                      <p className="font-semibold">{users?.find(u => u.id === room.participants.find(id => id !== currentUser?.uid))?.displayName}</p>
-                      <p className="text-sm text-gray-500 truncate">{room.lastMessage}</p>
-                    </div>
-                  </Button>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="flex-1 flex flex-col">
-          <CardContent className="flex-1 overflow-y-auto p-4">
-            {isLoadingMessages ? (
-              <div className="flex justify-center items-center h-full">
-                <Loader2 className="animate-spin" />
-              </div>
-            ) : (
-              <>
-                {hasNextPage && (
-                  <div ref={loadMoreRef} className="flex justify-center py-2">
-                    {isFetchingNextPage ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <Button onClick={() => fetchNextPage()} variant="ghost">
-                        Load more messages
+            <h1 className="text-3xl font-bold text-sky-800">Medelen Chat</h1>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Link href="/home">
+              <Button
+                variant="ghost"
+                className="bg-white/20 backdrop-filter backdrop-blur-lg border border-white/30 rounded-full px-4 py-2 text-sky-800 hover:bg-white/30 transition-all duration-300"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+          </motion.div>
+        </motion.div>
+        <div className="flex flex-1 gap-4 overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-1/4"
+          >
+            <Card className="h-full overflow-y-auto bg-white/20 backdrop-filter backdrop-blur-lg border border-white/30">
+              <CardContent className="p-4">
+                <Input 
+                  type="text" 
+                  placeholder="Search users..." 
+                  className="mb-4 bg-white/50"
+                  onChange={(e) => {
+                    // Implement user search logic here
+                  }}
+                />
+                {isLoadingUsers || isLoadingChatRooms ? (
+                  <div className="flex justify-center items-center h-full">
+                    <Loader2 className="animate-spin text-sky-600" />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {chatRooms?.map((room) => (
+                      <Button
+                        key={room.id}
+                        variant="ghost"
+                        className="w-full justify-start hover:bg-sky-100/50 transition-colors duration-200"
+                        onClick={() => setSelectedUser(room.participants.find(id => id !== currentUser?.uid) || null)}
+                      >
+                        <Avatar className="mr-2">
+                          <AvatarImage src={users?.find(u => u.id === room.participants.find(id => id !== currentUser?.uid))?.photoURL} />
+                          <AvatarFallback>{users?.find(u => u.id === room.participants.find(id => id !== currentUser?.uid))?.displayName?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="text-left">
+                          <p className="font-semibold text-sky-800">{users?.find(u => u.id === room.participants.find(id => id !== currentUser?.uid))?.displayName}</p>
+                          <p className="text-sm text-sky-600 truncate">{room.lastMessage}</p>
+                        </div>
                       </Button>
-                    )}
+                    ))}
                   </div>
                 )}
-                <AnimatePresence>
-                  {messages.map((msg, index) => (
-                    <motion.div
-                      key={msg.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className={`flex ${msg.senderId === currentUser?.uid ? 'justify-end' : 'justify-start'} mb-4`}
-                    >
-                      <div className={`max-w-[70%] ${msg.senderId === currentUser?.uid ? 'bg-blue-500 text-white' : 'bg-gray-200'} rounded-lg p-3`}>
-                        {msg.mediaUrl && (
-                          <div className="mb-2">
-                            {msg.mediaType === 'image' && (
-                              <Image src={msg.mediaUrl} alt="Shared image" width={200} height={200} className="rounded-lg" />
-                            )}
-                            {msg.mediaType === 'video' && (
-                              <video src={msg.mediaUrl} controls className="rounded-lg" style={{ maxWidth: '200px' }} />
-                            )}
-                            {msg.mediaType === 'audio' && (
-                              <audio src={msg.mediaUrl} controls className="w-full" />
-                            )}
-                          </div>
-                        )}
-                        <p>{msg.text}</p>
-                        <div className="flex justify-between items-center mt-2">
-                          <p className="text-xs opacity-70">{msg.timestamp ? format(msg.timestamp, 'HH:mm') : 'Sending...'}</p>
-                          <div className="flex space-x-1">
-                            {Object.entries(msg.reactions || {}).map(([userId, reaction]) => (
-                              <span key={userId} className="text-xs">{reaction}</span>
-                            ))}
-                          </div>
-                        </div>
-                        {msg.senderId !== currentUser?.uid && (
-                          <div className="flex justify-end space-x-1 mt-1">
-                            <button onClick={() => handleReaction(msg.id, '👍')} className="text-xs">👍</button>
-                            <button onClick={() => handleReaction(msg.id, '👎')} className="text-xs">👎</button>
-                            <button onClick={() => handleReaction(msg.id, '😄')} className="text-xs">😄</button>
-                          </div>
-                        )}
-                        {index === messages.length - 1 && msg.senderId === currentUser?.uid && (
-                          <div className="text-xs text-right mt-1">
-                            {msg.readBy?.includes(selectedUser as string) ? 'Read' : 'Delivered'}
-                          </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex-1 flex flex-col"
+          >
+            <Card className="flex-1 flex flex-col bg-white/20 backdrop-filter backdrop-blur-lg border border-white/30">
+              <CardContent className="flex-1 overflow-y-auto p-4">
+                {isLoadingMessages ? (
+                  <div className="flex justify-center items-center h-full">
+                    <Loader2 className="animate-spin text-sky-600" />
+                  </div>
+                ) : (
+                  <>
+                    {hasNextPage && (
+                      <div ref={loadMoreRef} className="flex justify-center py-2">
+                        {isFetchingNextPage ? (
+                          <Loader2 className="animate-spin text-sky-600" />
+                        ) : (
+                          <Button onClick={() => fetchNextPage()} variant="ghost" className="text-sky-600 hover:text-sky-700">
+                            Load more messages
+                          </Button>
                         )}
                       </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-                <div ref={messagesEndRef} />
-              </>
-            )}
-          </CardContent>
-          <CardContent className="p-4 border-t">
-            {isTyping && (
-              <div className="text-sm text-gray-500 mb-2">
-                {users?.find(u => u.id === selectedUser)?.displayName} is typing...
-              </div>
-            )}
-            <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center space-x-2">
-              <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Paperclip className="h-5 w-5" />
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                accept="image/*,video/*,audio/*"
-                className="hidden"
-              />
-              <Input
-                type="text"
-                placeholder="Type a message..."
-                value={message}
-                onChange={(e) => {
-                  setMessage(e.target.value);
-                  updateTypingStatus(e.target.value.length > 0);
-                }}
-                onBlur={() => updateTypingStatus(false)}
-                className="flex-1"
-              />
-              <Button type="submit" size="icon" disabled={isUploading || (!message.trim() && !mediaFile)}>
-                {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-              </Button>
-            </form>
-            {mediaFile && (
-              <div className="mt-2 flex items-center">
-                <p className="text-sm text-gray-500 truncate flex-1">{mediaFile.name}</p>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => setMediaFile(null)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    )}
+                    <AnimatePresence>
+                      {messages.map((msg, index) => (
+                        <motion.div
+                          key={msg.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.3 }}
+                          className={`flex ${msg.senderId === currentUser?.uid ? 'justify-end' : 'justify-start'} mb-4`}
+                        >
+                          <div className={`max-w-[70%] ${msg.senderId === currentUser?.uid ? 'bg-sky-500 text-white' : 'bg-white/70'} rounded-lg p-3 shadow-md`}>
+                            {/* ... (keep existing message content) */}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                    <div ref={messagesEndRef} />
+                  </>
+                )}
+              </CardContent>
+              <CardContent className="p-4 border-t border-white/30">
+                {isTyping && (
+                  <div className="text-sm text-sky-600 mb-2">
+                    {users?.find(u => u.id === selectedUser)?.displayName} is typing...
+                  </div>
+                )}
+                <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex items-center space-x-2">
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-sky-600 hover:text-sky-700 hover:bg-sky-100/50"
+                  >
+                    <Paperclip className="h-5 w-5" />
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept="image/*,video/*,audio/*"
+                    className="hidden"
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Type a message..."
+                    value={message}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                      updateTypingStatus(e.target.value.length > 0);
+                    }}
+                    onBlur={() => updateTypingStatus(false)}
+                    className="flex-1 bg-white/50"
+                  />
+                  <Button type="submit" size="icon" disabled={isUploading || (!message.trim() && !mediaFile)} className="bg-sky-600 hover:bg-sky-700 text-white">
+                    {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                  </Button>
+                </form>
+                {mediaFile && (
+                  <div className="mt-2 flex items-center">
+                    <p className="text-sm text-sky-600 truncate flex-1">{mediaFile.name}</p>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => setMediaFile(null)}
+                      className="text-sky-600 hover:text-sky-700 hover:bg-sky-100/50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
