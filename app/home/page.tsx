@@ -286,14 +286,13 @@ const HomePage: React.FC = () => {
     }
     setIsCreatingListing(true);
     const formData = new FormData(e.currentTarget);
+    formData.append('category', listingCategory); // Explicitly add category to formData
+
     try {
       if (editingListing) {
         await updateListingMutation.mutateAsync({ 
           listingId: editingListing.id, 
-          updateData: {
-            ...Object.fromEntries(formData),
-            category: listingCategory
-          }
+          updateData: Object.fromEntries(formData)
         });
       } else {
         await createListingMutation.mutateAsync(formData);
@@ -538,39 +537,39 @@ const HomePage: React.FC = () => {
                       </LampEffect>
                     </CardHeader>
                     <CardContent>
-                      {(showCreateListing || editingListing) && (
-                        <form onSubmit={handleSubmitListing} className="space-y-4">
-                          <Input name="title" placeholder="Listing Title" required defaultValue={editingListing?.title || ''} />
-                          <Input name="description" placeholder="Description" required defaultValue={editingListing?.description || ''} />
-                          <Input name="price" type="number" placeholder="Price per day" required defaultValue={editingListing?.price || ''} />
-                          <EnhancedSelect 
-                            name="category" 
-                            required 
-                            defaultValue={editingListing?.category || listingCategory}
-                            categories={categories}
-                            onChange={(value) => {
-                              setListingCategory(value);
-                              console.log("Category selected:", value);
-                            }}
-                          />
-                          <Input name="image" type="file" accept="image/*" required={!editingListing} />
-                          <Button
-                            type="submit"
-                            disabled={isCreatingListing || !listingCategory}
-                            className={cn(
-                              "bg-gradient-to-br from-sky-500 to-blue-500",
-                              "hover:bg-gradient-to-br hover:from-sky-600 hover:to-blue-600",
-                              "text-white font-bold py-2 px-4 rounded-md w-full",
-                              "transition duration-200 ease-in-out",
-                              "transform hover:-translate-y-1 hover:shadow-lg",
-                              "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50",
-                              (isCreatingListing || !listingCategory) && "opacity-50 cursor-not-allowed"
-                            )}
-                          >
-                            {isCreatingListing ? 'Processing...' : (editingListing ? 'Update' : 'Create') + ' Listing'}
-                          </Button>
-                        </form>
-                      )}
+                    {(showCreateListing || editingListing) && (
+                      <form onSubmit={handleSubmitListing} className="space-y-4">
+                        <Input name="title" placeholder="Listing Title" required defaultValue={editingListing?.title || ''} />
+                        <Input name="description" placeholder="Description" required defaultValue={editingListing?.description || ''} />
+                        <Input name="price" type="number" placeholder="Price per day" required defaultValue={editingListing?.price || ''} />
+                        <EnhancedSelect 
+                          name="category" 
+                          required 
+                          defaultValue={editingListing?.category || listingCategory}
+                          categories={categories}
+                          onChange={(value) => {
+                            setListingCategory(value);
+                            console.log("Category selected:", value); // Add this console log
+                          }}
+                        />
+                        <Input name="image" type="file" accept="image/*" required={!editingListing} />
+                        <Button
+                          type="submit"
+                          disabled={isCreatingListing || !listingCategory}
+                          className={cn(
+                            "bg-gradient-to-br from-sky-500 to-blue-500",
+                            "hover:bg-gradient-to-br hover:from-sky-600 hover:to-blue-600",
+                            "text-white font-bold py-2 px-4 rounded-md w-full",
+                            "transition duration-200 ease-in-out",
+                            "transform hover:-translate-y-1 hover:shadow-lg",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50",
+                            (isCreatingListing || !listingCategory) && "opacity-50 cursor-not-allowed"
+                          )}
+                        >
+                          {isCreatingListing ? 'Processing...' : (editingListing ? 'Update' : 'Create') + ' Listing'}
+                        </Button>
+                      </form>
+                    )}
                       <h3 className="text-xl font-semibold text-sky-600 mt-6 mb-4">Your Listings</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {vendorListings.map((listing) => (
