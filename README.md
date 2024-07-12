@@ -157,4 +157,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-For support or inquiries, please contact us at support@medelen.org or visit [www.medelen.com](https://www.medelen.org).
+For support or inquiries, please contact us at support@medelen.org or visit [www.medelen.org](https://www.medelen.org).
