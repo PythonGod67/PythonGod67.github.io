@@ -426,8 +426,8 @@ const Footer = () => (
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <h3 className="text-xl font-bold mb-4">Contact Us</h3>
-          <p>Email: support@medelen.com</p>
-          <p>Phone: (123) 456-7890</p>
+          <p>Email: support@medelen.org</p>
+          <p>Phone: +1 (123) 456-7890</p>
           <div className="flex space-x-4 mt-4">
             <a href="https://www.instagram.com/medelen" target="_blank" rel="noopener noreferrer" className="hover:text-sky-400 transition-colors">
               <Instagram size={24} />
