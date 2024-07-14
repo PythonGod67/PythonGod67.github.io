@@ -100,7 +100,7 @@ Before you begin, ensure you have the following installed:
 ## Configuration
 
 1. Firebase Setup:
-   - Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Create a brand new Firebase project at [Firebase Console](https://console.firebase.google.com/)
    - Enable Authentication, Firestore, and Storage services
    - Set up your Firebase configuration (see [Environment Variables](#environment-variables) section)
 
