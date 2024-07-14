@@ -9,10 +9,10 @@ type FlipWordsProps = {
 };
 
 export const FlipWords: React.FC<FlipWordsProps> = ({ words = [], duration = 3000, className }) => {
-  if (!Array.isArray(words) || words.length === 0) {
+  /*if (!Array.isArray(words) || words.length === 0) {
     console.error("The 'words' prop should be a non-empty array.");
     return null;
-  }
+  }*/
 
   const [currentWord, setCurrentWord] = useState(words[0]);
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
