@@ -67,7 +67,7 @@ const AboutUsPage: React.FC = () => {
                 <motion.div {...staggeredFadeInUp(0.6)} className="mb-12">
                   <h2 className="text-3xl font-semibold text-sky-700 mb-4">Our Mission</h2>
                   <p className="text-lg text-gray-800">
-                    At Medelen, we're on a mission to make physical therapy equipment accessible to everyone. 
+                    At Medelen, we&apos;re on a mission to make physical therapy equipment accessible to everyone. 
                     We believe that recovery and rehabilitation should not be hindered by the high costs or 
                     limited availability of essential equipment.
                   </p>
@@ -153,7 +153,7 @@ const AboutUsPage: React.FC = () => {
                 <motion.div {...staggeredFadeInUp(2.6)}>
                   <h2 className="text-3xl font-semibold text-sky-700 mb-4">Join Our Mission</h2>
                   <p className="text-gray-800 mb-6">
-                    Whether you're looking to rent equipment for your recovery or you have equipment 
+                    Whether you&apos;re looking to rent equipment for your recovery or you have equipment 
                     to share, join us in our mission to make physical therapy more accessible for everyone.
                   </p>
                   <div className="flex justify-center">

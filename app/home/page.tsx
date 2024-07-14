@@ -679,10 +679,6 @@ const HomePage: React.FC = () => {
                               alt="Resistance Bands"
                               width={300}
                               height={200}
-                              src="/resistance-bands.webp"
-                              alt="Resistance Bands"
-                              width={300}
-                              height={200}
                               className="w-full h-40 object-cover rounded-md mb-2"
                             />
                             <p className="text-lg font-bold text-sky-600 mb-2">$15/day</p>

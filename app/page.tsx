@@ -379,7 +379,7 @@ const Testimonials = () => {
                   <CardDescription>{testimonial.role}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
-                  <p className="text-gray-600 italic">"{testimonial.content}"</p>
+                  <p className="text-gray-600 italic">&quot;{testimonial.content}&quot;</p>
                 </CardContent>
               </Card>
             </motion.div>
