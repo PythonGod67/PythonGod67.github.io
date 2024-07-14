@@ -108,8 +108,8 @@ const TermsAndConditionsPage: React.FC = () => {
           <p>If you have any questions about these Terms, please contact us at:</p>
           <p className="mt-2">
             Email: legal@medelen.com<br />
-            Address: [Medelen's Physical Address]<br />
-            Phone: [Medelen's Contact Number]
+            Address: [Medelen&apos;s Physical Address]<br />
+            Phone: [Medelen&apos;s Contact Number]
           </p>
         </>
       )
